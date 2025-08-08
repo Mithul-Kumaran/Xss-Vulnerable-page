@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>XSS Vuln Page</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #ffffff;
+      color: #1f2937;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 60px auto;
+      background-color: #f8fafc;
+      padding: 30px 40px;
+      border-radius: 10px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    h1, h2 {
+      text-align: center;
+      color: #1f2937;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      margin-top: 20px;
+    }
+
+    label {
+      margin-bottom: 8px;
+      font-size: 1rem;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      background-color: #ffffff;
+      color: #1f2937;
+    }
+
+    input[type="submit"], button {
+      margin-top: 15px;
+      padding: 10px;
+      font-size: 16px;
+      background-color: #d4af37; /* golden */
+      color: #1f2937; /* dark text */
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    input[type="submit"]:hover, button:hover {
+      background-color: #c7a130;
+    }
+
+    #output {
+      margin-top: 25px;
+      padding: 15px;
+      border-radius: 8px;
+      background-color: #f3f4f6;
+      border: 1px solid #d1d5db;
+      font-size: 1rem;
+      display: none;
+    }
+
+    #payloads {
+      margin-top: 30px;
+      display: none;
+      background-color: #f9fafb;
+      color: #1f2937;
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    pre {
+      overflow-x: auto;
+      background-color: #e5e7eb;
+      padding: 10px;
+      border-radius: 6px;
+    }
+
+    .center {
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚨 XSS Vulnerability Page</h1>
+
+    <!-- Vulnerable Form -->
+    <form method="GET" action="">
+      <label for="username">Enter your name:</label>
+      <input type="text" id="username" name="username" required />
+      <input type="submit" value="Submit" />
+    </form>
+
+    <!-- Output box (vulnerable to XSS) -->
+    <div id="output"></div>
+
+    <!-- Button to show payloads -->
+    <div class="center">
+      <button onclick="togglePayloads()">Show XSS Payload Examples</button>
+    </div>
+
+    <!-- Hidden Payloads -->
+    <div id="payloads">
+      <h2>Test Payloads</h2>
+      <pre>
+&lt;script&gt;alert('XSS')&lt;/script&gt;
+&lt;img src=x onerror=alert('XSS')&gt;
+&lt;svg onload=alert('XSS')&gt;
+&lt;iframe src="javascript:alert('XSS')"&gt;&lt;/iframe&gt;
+      </pre>
+    </div>
+  </div>
+
+  <script>
+    function togglePayloads() {
+      const payloads = document.getElementById("payloads");
+      payloads.style.display = payloads.style.display === "none" ? "block" : "none";
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const username = params.get("username");
+
+      if (username) {
+        const output = document.getElementById("output");
+        output.style.display = "block";
+        // ❌ Intentionally vulnerable to XSS
+        output.innerHTML = "You entered: " + username;
+      }
+    });
+  </script>
+</body>
+</html>
